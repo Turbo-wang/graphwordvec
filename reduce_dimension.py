@@ -11,7 +11,11 @@ import string
 from sklearn.decomposition import PCA
 from gensim.models import Word2Vec
 from sklearn import manifold
+import os
 
+
+manifold_method = ["isomap", "LocallyLinearEmbedding", "MDS", "SpectralEmbedding",
+         "TSNE", "modified_LLE", "HessianLLE", "LTSA"]
 
 def get_txt_line(file_name):
     translator = str.maketrans({key: None for key in string.punctuation})
@@ -74,6 +78,10 @@ def find_all_cliques(G):
     cliques = list(nx.clique.find_cliques(G))
     return cliques
 
+
+def save_graph(G, path):
+    nx.write_yaml(G, os.path.join('./corpus', path))
+    
 
 def find_nodes_cliques(G, nodes=None):
     H = G.copy()
@@ -147,28 +155,51 @@ def nn_dimension(cli_list, dimension, win, sg, hs):
 
 def manifold_reduce_dimension(name, dimension, cli_list):
     words_list, cli_matrix = build_matrix(cli_list)
-    cli_matrix = np.asarray(cli_matrix, dtype='int32')
-    di_matrix = _manifold_dimension(name, dimension, cli_matrix)
+    cli_matrix = np.asarray(cli_matrix, dtype='float64')
+    di_matrix = _manifold_dimension(name, dimension, cli_matrix.T)
     return words_list, di_matrix
 
 
 def _manifold_dimension(name, dimension, cli_matrix):
-    n_neighbors = 30
+    n_neighbors = 3
+    di_matrix = []
     if name == "isomap":
         X_iso = manifold.Isomap(n_neighbors, n_components=dimension).fit_transform(X)
+        di_matrix = X_iso
     elif name == "LocallyLinearEmbedding":
-        clf = manifold.LocallyLinearEmbedding(n_neighbors, n_components=2,
+        clf = manifold.LocallyLinearEmbedding(n_neighbors, n_components=dimension,
                                       method='standard')
-        X_lle = clf.fit_transform(X)        
+        X_lle = clf.fit_transform(cli_matrix) 
+        di_matrix = X_lle       
     elif name == "MDS":
-        pass
+        clf = manifold.MDS(n_components=dimension, n_init=1, max_iter=100)
+        X_mds = clf.fit_transform(cli_matrix)
+        di_matrix = X_mds
     elif name == "SpectralEmbedding":
-        pass
+        embedder = manifold.SpectralEmbedding(n_components=dimension, random_state=0,
+                                      eigen_solver="arpack")
+        X_se = embedder.fit_transform(cli_matrix)
+        di_matrix = X_se
     elif name == "TSNE":
-        pass
+        tsne = manifold.TSNE(n_components=dimension, init='pca', random_state=0)
+        X_tsne = tsne.fit_transform(cli_matrix)
+        di_matrix = X_tsne
     elif name == "modified_LLE":
-        
-
+        clf = manifold.LocallyLinearEmbedding(n_neighbors, n_components=dimension,
+                                      method='modified')
+        X_mlle = clf.fit_transform(cli_matrix)
+        di_matrix = X_mlle
+    elif name == "HessianLLE":
+        clf = manifold.LocallyLinearEmbedding(n_neighbors, n_components=dimension,
+                                      method='hessian')
+        X_hlle = clf.fit_transform(cli_matrix)
+        di_matrix = X_hlle
+    elif name == "LTSA":
+        clf = manifold.LocallyLinearEmbedding(n_neighbors, n_components=dimension,
+                                      method='ltsa')
+        X_ltsa = clf.fit_transform(cli_matrix)
+        di_matrix = X_ltsa
+    return di_matrix
 
 
 if __name__ == '__main__':
@@ -176,5 +207,7 @@ if __name__ == '__main__':
     # PMI_filter(G, 0.25)
     cli_list = find_all_cliques(G)
     # pca_reduct_dimension(cli_list, 2)
-    nn_dimension(cli_list, 2, win=5, sg = 0, hs = 0)
+    # nn_dimension(cli_list, 2, win=5, sg = 0, hs = 0)
     # pca_dimension(cli_matrix, 2)
+    x = manifold_reduce_dimension("LTSA", 2, cli_list)
+    print(x)
