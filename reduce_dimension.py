@@ -203,9 +203,9 @@ def _manifold_dimension(name, dimension, cli_matrix):
 
 
 if __name__ == '__main__':
-    s = time()
+    s = time.time()
     G = build_graph('corpus/wiki.en.text')
-    print(time() - s)
+    print(time.time() - s)
     save_graph(G, 'graph_no_pmi_en_wiki')
     # PMI_filter(G, 0.25)
     # cli_list = find_all_cliques(G)
