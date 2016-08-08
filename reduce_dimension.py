@@ -206,6 +206,7 @@ def _manifold_dimension(name, dimension, cli_matrix):
 
 if __name__ == '__main__':
     s = time.time()
+    print(s)
     G = build_graph('corpus/wiki.en.text')
     # G = build_graph('test.txt')
     print(time.time() - s)
