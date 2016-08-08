@@ -5,7 +5,7 @@ from collections import Counter
 from collections import defaultdict
 from collections import OrderedDict
 from itertools import combinations
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import types
 import string
 from sklearn.decomposition import PCA
@@ -13,6 +13,8 @@ from gensim.models import Word2Vec
 from sklearn import manifold
 import os
 import time
+import pickle
+
 
 manifold_method = ["isomap", "LocallyLinearEmbedding", "MDS", "SpectralEmbedding",
          "TSNE", "modified_LLE", "HessianLLE", "LTSA"]
@@ -205,10 +207,14 @@ def _manifold_dimension(name, dimension, cli_matrix):
 if __name__ == '__main__':
     s = time.time()
     G = build_graph('corpus/wiki.en.text')
+    # G = build_graph('test.txt')
     print(time.time() - s)
     save_graph(G, 'graph_no_pmi_en_wiki')
-    # PMI_filter(G, 0.25)
-    # cli_list = find_all_cliques(G)
+    PMI_filter(G, 0.0003)
+    cli_list = find_all_cliques(G)
+    with open('corpus/cli_PMI_0.0003', 'wb') as f:
+        pickle.dump(cli_list, f)
+
     # pca_reduct_dimension(cli_list, 2)
     # nn_dimension(cli_list, 2, win=5, sg = 0, hs = 0)
     # pca_dimension(cli_matrix, 2)
