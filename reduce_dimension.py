@@ -12,7 +12,7 @@ from sklearn.decomposition import PCA
 from gensim.models import Word2Vec
 from sklearn import manifold
 import os
-
+import time
 
 manifold_method = ["isomap", "LocallyLinearEmbedding", "MDS", "SpectralEmbedding",
          "TSNE", "modified_LLE", "HessianLLE", "LTSA"]
@@ -81,7 +81,7 @@ def find_all_cliques(G):
 
 def save_graph(G, path):
     nx.write_yaml(G, os.path.join('./corpus', path))
-    
+
 
 def find_nodes_cliques(G, nodes=None):
     H = G.copy()
@@ -203,11 +203,14 @@ def _manifold_dimension(name, dimension, cli_matrix):
 
 
 if __name__ == '__main__':
-    G = build_graph('test.txt')
+    s = time()
+    G = build_graph('corpus/wiki.en.text')
+    print(time() - s)
+    save_graph(G, 'graph_no_pmi_en_wiki')
     # PMI_filter(G, 0.25)
-    cli_list = find_all_cliques(G)
+    # cli_list = find_all_cliques(G)
     # pca_reduct_dimension(cli_list, 2)
     # nn_dimension(cli_list, 2, win=5, sg = 0, hs = 0)
     # pca_dimension(cli_matrix, 2)
-    x = manifold_reduce_dimension("LTSA", 2, cli_list)
-    print(x)
+    # x = manifold_reduce_dimension("LTSA", 2, cli_list)
+    # print(x)
