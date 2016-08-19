@@ -14,7 +14,7 @@ from sklearn import manifold
 import os
 import time
 import pickle
-
+from __future__ import print_function
 
 manifold_method = ["isomap", "LocallyLinearEmbedding", "MDS", "SpectralEmbedding",
          "TSNE", "modified_LLE", "HessianLLE", "LTSA"]
@@ -29,15 +29,6 @@ def get_txt_line(file_name):
             yield sen
 
 
-def sents_list(sents):
-    sentences_list = []
-    for sen in sents:
-        if sen != []:
-            sentences_list.append(sen)
-    # print(len(sentences_list))
-    return sentences_list
-
-
 def count_word_fre(sents_list):
     sents = []
     for sen in sents_list:
@@ -46,8 +37,15 @@ def count_word_fre(sents_list):
     return word_fre
 
 
+def build_sent_list(file_name):
+    sent_gene = get_txt_line(file_name)
+    sent_list = []
+    for sen in sent_gene:
+        sent_list.append(sen)
+    return sent_list
+
 def build_graph(file_name):
-    sentences_list = sents_list(get_txt_line(file_name))
+    sentences_list = build_sent_list(file_name)
     G = nx.Graph()
     word_fre = count_word_fre(sentences_list)
     for sent in sentences_list:
@@ -210,11 +208,11 @@ if __name__ == '__main__':
     G = build_graph('corpus/wiki.en.text')
     # G = build_graph('test.txt')
     print(time.time() - s)
-    save_graph(G, 'graph_no_pmi_en_wiki')
-    PMI_filter(G, 0.0003)
-    cli_list = find_all_cliques(G)
-    with open('corpus/cli_PMI_0.0003', 'wb') as f:
-        pickle.dump(cli_list, f)
+    # save_graph(G, 'graph_no_pmi_en_wiki')
+    # PMI_filter(G, 0.0003)
+    # cli_list = find_all_cliques(G)
+    # with open('corpus/cli_PMI_0.0003', 'wb') as f:
+    #     pickle.dump(cli_list, f)
 
     # pca_reduct_dimension(cli_list, 2)
     # nn_dimension(cli_list, 2, win=5, sg = 0, hs = 0)
