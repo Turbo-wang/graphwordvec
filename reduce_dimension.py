@@ -1,3 +1,4 @@
+from __future__ import print_function
 import nltk
 import numpy as np
 import networkx as nx
@@ -14,7 +15,7 @@ from sklearn import manifold
 import os
 import time
 import pickle
-from __future__ import print_function
+
 
 manifold_method = ["isomap", "LocallyLinearEmbedding", "MDS", "SpectralEmbedding",
          "TSNE", "modified_LLE", "HessianLLE", "LTSA"]
