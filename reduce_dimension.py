@@ -48,19 +48,21 @@ def build_graph(file_name):
     sentences_list = build_sent_list(file_name)
     G = nx.Graph()
     word_fre = count_word_fre(sentences_list)
-    for sent in sentences_list:
-        H = nx.Graph()
-        edges = combinations(sent, 2)
-        H.add_edges_from(edges)
-        for edge in H.edges(): 
-            word1 = edge[0]
-            word2 = edge[1]
-            PMI_det = 1 / (word_fre[word1] * word_fre[word2])
-            if G.has_edge(word1, word2):
-                G[word1][word2]['weight'] += PMI_det
-            else:
-                G.add_edge(word1, word2, weight=PMI_det)
-    return G
+    print('sentences_list_len', len(sentences_list))
+    print('word num', len(word_fre))
+    # for sent in sentences_list:
+    #     H = nx.Graph()
+    #     edges = combinations(sent, 2)
+    #     H.add_edges_from(edges)
+    #     for edge in H.edges(): 
+    #         word1 = edge[0]
+    #         word2 = edge[1]
+    #         PMI_det = 1 / (word_fre[word1] * word_fre[word2])
+    #         if G.has_edge(word1, word2):
+    #             G[word1][word2]['weight'] += PMI_det
+    #         else:
+    #             G.add_edge(word1, word2, weight=PMI_det)
+    # return G
 
 
 def PMI_filter(G, pmi_threshhold):
@@ -205,7 +207,8 @@ def _manifold_dimension(name, dimension, cli_matrix):
 if __name__ == '__main__':
     s = time.time()
     print(s)
-    G = build_graph('corpus/wiki.en.text')
+    # G = build_graph('corpus/wiki.en.text')
+    build_graph('corpus/wiki.en.text')
     # G = build_graph('test.txt')
     print(time.time() - s)
     # save_graph(G, 'graph_no_pmi_en_wiki')
